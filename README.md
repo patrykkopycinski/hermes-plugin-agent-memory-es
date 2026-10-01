@@ -16,6 +16,10 @@ Adds three agent tools:
 Owner identity is the service-side owner bound to the API key; the profile can
 never widen visibility by argument.
 
+## Landing page
+
+**https://patrykkopycinski.github.io/hermes-plugin-agent-memory-es/** — concept, install, interactive flow diagram.
+
 ## Architecture
 
 ![agent-memory-es topology](https://raw.githubusercontent.com/patrykkopycinski/agent-memory-es/main/docs/diagrams/architecture.svg)
