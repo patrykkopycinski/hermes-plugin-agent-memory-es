@@ -124,3 +124,8 @@ class AgentMemoryEsProvider(MemoryProvider):
             self._post("/memory/retain", {"kind": "semantic", "text": f"{target}: {content}"[:4000]})
         except Exception:
             pass
+
+
+def register(ctx) -> None:
+    """Register the agent-memory-es provider with the plugin system."""
+    ctx.register_memory_provider(AgentMemoryEsProvider())
