@@ -21,7 +21,7 @@ never widen visibility by argument.
 ```bash
 # 1. run the agent-memory-es service (see its repo) and mint a profile API key
 
-# 2. drop this plugin into user plugins
+# 2. drop this plugin into user plugins (dir name MUST stay agent_memory_es)
 git clone https://github.com/patrykkopycinski/hermes-plugin-agent-memory-es.git \
   ~/.hermes/plugins/agent_memory_es
 
