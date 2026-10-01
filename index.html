@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>agent_memory_es — a Hermes Agent memory provider plugin</title>
+<meta name="description" content="Standalone Hermes Agent memory plugin backed by agent-memory-es: recall, retain, reflect as native agent tools, with private/team/common visibility.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2307101F'/><path d='M9 16h4l2-5 3 10 2-5h3' stroke='%2361A2FF' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<style>
+  :root{--bg:#07101F;--panel:#0B1628;--panel2:#0E1D33;--fg:#D6E4FF;--muted:#7C8DB0;--accent:#61A2FF;--gold:#FEC514;--border:#1F3050;--mono:ui-monospace,'Roboto Mono','SF Mono',monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font-family:Inter,'Segoe UI',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 28px}
+  .hero{padding:92px 0 68px;border-bottom:1px solid var(--border);
+    background:radial-gradient(1000px 460px at 70% -10%,rgba(97,162,255,.12),transparent 60%)}
+  .badge{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--border);background:rgba(97,162,255,.07);
+    border-radius:999px;padding:5px 14px;font-size:.78rem;color:var(--accent);letter-spacing:.05em;text-transform:uppercase;font-weight:700}
+  h1{font-size:clamp(2rem,4.8vw,3rem);font-weight:800;letter-spacing:-.02em;margin:18px 0 12px;line-height:1.15}
+  h1 span{background:linear-gradient(92deg,#61A2FF,#9BB8FF 60%,#FEC514);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{color:var(--muted);font-size:1.12rem;max-width:44em}
+  .cta{margin-top:28px;display:flex;gap:13px;flex-wrap:wrap}
+  .btn{display:inline-flex;gap:8px;align-items:center;border-radius:10px;padding:12px 22px;font-weight:700;font-size:.94rem;text-decoration:none;transition:transform .12s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn.primary{background:var(--accent);color:#04101F;box-shadow:0 6px 24px rgba(97,162,255,.25)}
+  .btn.ghost{border:1px solid var(--border);background:var(--panel);color:var(--fg)}
+  section{padding:64px 0}
+  section.alt{background:var(--panel);border-block:1px solid var(--border)}
+  .kicker{color:var(--accent);font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+  h2{font-size:1.6rem;font-weight:750;margin-bottom:8px}
+  .sub{color:var(--muted);max-width:50em;margin-bottom:32px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px}
+  .card:hover{border-color:rgba(97,162,255,.45)}
+  .card code{font-family:var(--mono);color:var(--gold);font-size:.86em}
+  .card h3{font-size:1rem;margin-bottom:7px}
+  .card p{color:var(--muted);font-size:.9rem}
+  .tools{display:grid;gap:12px;margin-top:6px}
+  .tool{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:baseline;background:var(--panel2);
+    border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:12px;padding:18px 22px}
+  .tool code{font-family:var(--mono);color:var(--accent);font-size:.9rem;font-weight:700;white-space:nowrap}
+  .tool span{color:var(--muted);font-size:.9rem}
+  .frame{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--panel);margin-top:22px}
+  .frame-head{display:flex;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--border);font-size:.85rem;color:var(--muted)}
+  .frame iframe{display:block;width:100%;height:600px;border:0;background:var(--bg)}
+  pre{background:#050B14;border:1px solid var(--border);border-radius:12px;padding:20px;overflow:auto;font-family:var(--mono);font-size:.82rem;color:#9FB6DC;line-height:1.75}
+  pre .c{color:#5E729B}pre .s{color:#7EE2A8}pre .o{color:#FEC514}pre .k{color:#61A2FF}
+  footer{border-top:1px solid var(--border);padding:34px 0;color:var(--muted);font-size:.85rem}
+  footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  @media(max-width:640px){.frame iframe{height:440px}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge">Hermes Agent · memory provider · MIT</span>
+    <h1>Give Hermes Agent<br><span>a memory that outlives the chat.</span></h1>
+    <p class="lede">A standalone plugin that turns the <a href="https://patrykkopycinski.github.io/agent-memory-es/">agent-memory-es</a> service into three native agent tools — recall, retain, reflect — with server-enforced private/team/common visibility.</p>
+    <div class="cta">
+      <a class="btn primary" href="#install">Install in 60 seconds</a>
+      <a class="btn ghost" href="https://github.com/patrykkopycinski/hermes-plugin-agent-memory-es">GitHub ↗</a>
+      <a class="btn ghost" href="plugin-flow.html">See the flow ↗</a>
+    </div>
+  </div>
+</header>
+
+<section class="alt">
+  <div class="wrap">
+    <p class="kicker">What the agent gets</p>
+    <h2>Three tools, zero new concepts.</h2>
+    <p class="sub">No daemon on your laptop beyond the service itself, no config surface beyond a URL and a key. The plugin is a thin client — all memory logic lives in the service.</p>
+    <div class="tools">
+      <div class="tool"><code>agent_memory_recall</code><span>hybrid search over the memory bank — the agent's own <b style="color:var(--fg)">remember that…</b> lookup</span></div>
+      <div class="tool"><code>agent_memory_retain</code><span>store a durable fact, tagged <code>private</code> / <code>team</code> / <code>common</code> — visibility the profile can narrow but never widen</span></div>
+      <div class="tool"><code>agent_memory_reflect</code><span>ask a question over memory, get an answer with citations back to memory ids</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">How a turn flows</p>
+    <h2>Behind the scenes, per session.</h2>
+    <p class="sub">Turn sync mirrors your words into the episodic tier; prompts get a top-5 prefetch so the model starts with relevant memories; reflect runs only when asked. Click through the full sequence — every message maps to a real code path.</p>
+    <div class="frame">
+      <div class="frame-head"><b>One turn through the memory bank</b> <a href="plugin-flow.html" target="_blank">open full diagram ↗</a></div>
+      <iframe src="plugin-flow.html" title="Sequence: agent turn through plugin, service, Elasticsearch" loading="lazy"></iframe>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <p class="kicker">Why this shape</p>
+    <h2>Standalone by design.</h2>
+    <div class="grid">
+      <div class="card"><h3>Drop-in, not fork-in</h3><p>Lives in <code>~/.hermes/plugins/agent_memory_es/</code> — no Hermes source changes, survives agent upgrades.</p></div>
+      <div class="card"><h3>Identity is the key</h3><p>Owner identity binds to the API key server-side. A misbehaving profile can't read another owner's private memories by asking nicely.</p></div>
+      <div class="card"><h3>Schemas are a contract</h3><p>Tool schemas use the OpenAI <code>parameters</code> key — pinned by a regression test after the MCP-style <code>input_schema</code> naming silently stripped every argument.</p></div>
+      <div class="card"><h3>Degrades gracefully</h3><p>Service down? Hermes keeps working — memory calls fail soft, the session doesn't.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <p class="kicker">Install</p>
+    <h2>Clone, point, verify.</h2>
+    <pre><span class="c"># 1. run the agent-memory-es service and mint a key — see its quick start</span>
+<span class="c">#    https://patrykkopycinski.github.io/agent-memory-es/#quickstart</span>
+
+<span class="c"># 2. drop the plugin into user plugins (dir name matters)</span>
+<span class="o">git clone</span> https://github.com/patrykkopycinski/hermes-plugin-agent-memory-es.git \
+  ~/.hermes/plugins/agent_memory_es
+
+<span class="c"># 3. point Hermes at it</span>
+<span class="c">#    ~/.hermes/config.yaml:</span>
+<span class="c">#      memory:</span>
+<span class="c">#        provider: agent_memory_es</span>
+<span class="o">export</span> AMES_SERVICE_URL=<span class="s">http://localhost:8123</span>
+<span class="o">export</span> AMES_SERVICE_KEY=<span class="s">&lt;your-key&gt;</span>
+
+<span class="c"># 4. verify</span>
+<span class="o">hermes</span> memory status</pre>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>hermes-plugin-agent-memory-es · MIT</span>
+    <span><a href="https://github.com/patrykkopycinski/hermes-plugin-agent-memory-es">GitHub</a> · service: <a href="https://patrykkopycinski.github.io/agent-memory-es/">agent-memory-es</a></span>
+  </div>
+</footer>
+</body>
+</html>
