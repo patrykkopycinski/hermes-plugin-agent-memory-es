@@ -1,0 +1,4 @@
+name: agent_memory_es
+version: 0.1.0
+description: "agent-memory-es memory bank — HTTP client for the agent-memory-es FastAPI service (retain/recall/reflect) with per-profile API key and private/team/common visibility tiers."
+requires_env: []
