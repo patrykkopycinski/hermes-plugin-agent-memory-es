@@ -109,7 +109,9 @@ class AgentMemoryEsProvider(MemoryProvider):
                                                   "visibility": args.get("visibility", "private")})
                 return json.dumps({"stored": r["_id"]})
             if tool_name == "agent_memory_reflect":
-                r = self._post("/memory/reflect", {"question": args["question"]})
+                # reflect runs multi-round LLM synthesis server-side (~60s+);
+                # default 20s _post timeout killed every reflect call
+                r = self._post("/memory/reflect", {"question": args["question"]}, timeout=150)
                 return json.dumps(r)
         except urllib.error.HTTPError as e:
             return json.dumps({"error": f"service {e.code}: {e.read().decode()[:200]}"})
