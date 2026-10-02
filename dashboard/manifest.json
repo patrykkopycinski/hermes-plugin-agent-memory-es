@@ -1,0 +1,4 @@
+{
+  "name": "agent_memory_es",
+  "api": "plugin_api.py"
+}
