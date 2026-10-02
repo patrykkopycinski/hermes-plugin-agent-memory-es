@@ -11,7 +11,7 @@ import { ROUTES_AREA, SIDEBAR_NAV_AREA } from '@hermes/plugin-sdk'
 import { jsx, jsxs } from 'react/jsx-runtime'
 import { useCallback, useEffect, useState } from 'react'
 
-const ID = 'ames-inspector'
+const ID = 'agent_memory_es'
 
 function Card({ title, children }) {
   return jsxs('div', {
