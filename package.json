@@ -1,6 +1,6 @@
 {
   "private": true,
   "scripts": {
-    "test": "node --test desktop/"
+    "test": "node --test 'desktop/*.test.mjs'"
   }
 }
