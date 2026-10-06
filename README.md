@@ -70,10 +70,27 @@ hermes memory status
 
 ## Development
 
+Python tests (schema regression + dashboard proxy):
+
 ```bash
 cd ~/.hermes/hermes-agent   # any hermes-agent checkout provides the contract
-python -m pytest ~/.hermes/plugins/agent_memory_es/tests -q
+HERMES_HOME=~/.hermes PYTHONPATH=~/.hermes/hermes-agent \
+  python -m pytest ~/.hermes/plugins/agent_memory_es/tests -q
 ```
 
 The regression test pins the OpenAI `parameters` schema key — the sanitizer
 silently empties MCP-style `input_schema`, which strips every tool argument.
+`test_plugin_api.py` pins the dashboard proxy's 503/404-passthrough/502
+behavior (no network — `urlopen` is monkeypatched).
+
+Desktop page tests (node:test, no deps — stubs `@hermes/plugin-sdk`, `react`,
+`react/jsx-runtime` in the loader):
+
+```bash
+cd ~/.hermes/plugins/agent_memory_es
+npm test            # node --test 'desktop/*.test.mjs'
+```
+
+`desktop/plugin.test.mjs` pins `MemoryPage.load`: `ctx.rest()` resolves to
+parsed JSON (not a fetch `Response`), so `r.ok`/`r.text()` code paths break —
+the regression case fails with "is not a function" style errors if reintroduced.
