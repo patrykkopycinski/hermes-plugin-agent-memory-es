@@ -19,6 +19,12 @@ from agent.memory_provider import MemoryProvider, RecallStatus, is_trivial_promp
 # Fused score = RRF + recency, so it spans ~0.0179-0.0189 and tracks rank, not relevance.
 DEFAULT_PREFETCH_MIN_SCORE = 0.0184
 
+# Server memory kinds. Prefetch skips `procedural` by default: 144/650 top-5 hits on 130 real prompts
+# were procedural, all 2 distinct team project-profile blobs, 0/11 labelled relevant
+# (docs/min-score-calibration.md). The explicit agent_memory_recall tool still searches every kind.
+KINDS = ("episodic", "semantic", "procedural")
+DEFAULT_PREFETCH_KINDS = ("episodic", "semantic")
+
 RECALL_PROPERTIES: Dict[str, Any] = {
     "query": {"type": "string"},
     "min_score": {"type": "number",
@@ -31,14 +37,7 @@ RECALL_PROPERTIES: Dict[str, Any] = {
 
 
 def _stored_prefetch_min_score() -> Optional[str]:
-    """Value saved by the desktop panel in <HERMES_HOME>/agent_memory_es/config.json, if any."""
-    try:
-        from hermes_constants import get_hermes_home
-        data = json.loads((get_hermes_home() / "agent_memory_es" / "config.json").read_text("utf-8-sig"))
-    except Exception:
-        return None
-    val = data.get("prefetch_min_score") if isinstance(data, dict) else None
-    return None if val is None else str(val)
+    return _stored_config_value("prefetch_min_score")
 
 
 def prefetch_min_score() -> Optional[float]:
@@ -59,6 +58,36 @@ def prefetch_min_score() -> Optional[float]:
         return float(raw)
     except ValueError:
         return DEFAULT_PREFETCH_MIN_SCORE
+
+
+def _stored_config_value(key: str) -> Optional[str]:
+    """Value saved by the desktop panel in <HERMES_HOME>/agent_memory_es/config.json, if any."""
+    try:
+        from hermes_constants import get_hermes_home
+        data = json.loads((get_hermes_home() / "agent_memory_es" / "config.json").read_text("utf-8-sig"))
+    except Exception:
+        return None
+    val = data.get(key) if isinstance(data, dict) else None
+    return None if val is None else str(val)
+
+
+def prefetch_kinds() -> Optional[List[str]]:
+    """`kinds` sent with every prefetch, or None for all kinds (server default).
+
+    Precedence: AMES_PREFETCH_KINDS env > stored config key `prefetch_kinds` > default
+    (every kind except `procedural`). Value is a comma list of kinds; `all` restores the
+    unfiltered behaviour. Empty, or a list with no known kind, falls back to the default.
+    """
+    raw = os.environ.get("AMES_PREFETCH_KINDS")
+    if raw is None:
+        raw = _stored_config_value("prefetch_kinds")
+    if raw is None:
+        return list(DEFAULT_PREFETCH_KINDS)
+    raw = raw.strip().lower()
+    if raw == "all":
+        return None
+    kinds = [k for k in dict.fromkeys(p.strip() for p in raw.split(",")) if k in KINDS]
+    return kinds or list(DEFAULT_PREFETCH_KINDS)
 
 
 class AgentMemoryEsProvider(MemoryProvider):
@@ -113,6 +142,9 @@ class AgentMemoryEsProvider(MemoryProvider):
         min_score = prefetch_min_score()
         if min_score is not None:
             body["min_score"] = min_score
+        kinds = prefetch_kinds()
+        if kinds is not None:
+            body["kinds"] = kinds
         try:
             r = self._post("/memory/recall", body)
             # abstained => nothing cleared the floor: inject nothing (no empty header, no stale hits)

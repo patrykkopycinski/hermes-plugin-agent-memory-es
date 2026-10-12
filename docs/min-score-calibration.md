@@ -82,3 +82,37 @@ Session smoke: worktree plugin loaded through Hermes' `load_memory_provider`, dr
 
 Caveat: the abstain case uses a deliberately high floor (0.0189), because the fused score tracks rank and
 semantic search always returns neighbours, so even gibberish clears the default floor (see above).
+
+## Prefetch excludes `procedural` by default (`prefetch_kinds`)
+
+Prefetch now sends `kinds: ["episodic", "semantic"]`. Override: env `AMES_PREFETCH_KINDS` > stored panel
+config `prefetch_kinds` > default; a comma list of kinds, or `all` to restore the old unfiltered request.
+The `agent_memory_recall` tool is unchanged (all kinds). No server change; no doc was deleted, retagged or
+re-scoped (the two project-profile blobs belong to their owner).
+
+Before/after, read-only replay of the same 130 prompts against prod with the exact prefetch payload
+(`size 5`, `min_score 0.0184`; calibration/replay_kinds.py, 2026-10-12):
+
+| arm | queries | median injected chars | mean | hits | procedural hits |
+|---|---|---|---|---|---|
+| before (no `kinds`) | 130 | 7970 | 8268 | 635 | 130 |
+| after (`episodic`,`semantic`) | 130 | 1743 | 2024 | 506 | 0 |
+
+Median drops 7970 -> 1743 (-78%). (The earlier 8271 -> 1580 figure was computed offline from size-8 replay
+hits; this one is measured with the real payload.) No query abstains in either arm.
+
+Relevance check on the 45-hit labelled sample (13 relevant, 11 procedural): 0 of the 11 labelled procedural
+hits were relevant. Of the 13 relevant hits, 12 are present in the top 5 in both arms and 1 is absent in
+both arms (corpus/ranking drift since labelling; it is not caused by the `kinds` filter). Relevant hits lost
+by the change: 0.
+
+Mutation (tests/test_prefetch_kinds.py): default changed to include `procedural` -> 4 failed, 27 passed;
+`kinds` never sent -> 6 failed, 25 passed; restored -> 31 passed.
+
+Live smoke (plugin worktree loaded via `load_memory_provider`, `MemoryManager.prefetch_all` +
+`build_memory_context_block`, prod recall, query "what did we decide about the kibana eval gate for alertzero"):
+
+    default : body {"size": 5, "min_score": 0.0184, "kinds": ["episodic","semantic"]}
+              hits 4 (semantic, episodic, semantic, episodic) | raw chars 2355 | block chars 2579 | 'Project Profile' in block: False
+    kinds=all: body {"size": 5, "min_score": 0.0184}
+              hits 5 (incl. procedural)                       | raw chars 7994 | block chars 8218 | 'Project Profile' in block: True

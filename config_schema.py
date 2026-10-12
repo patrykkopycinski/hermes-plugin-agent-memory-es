@@ -22,6 +22,12 @@ CONFIG_SCHEMA = ProviderConfigSchema(
             env_fallbacks=("AMES_PREFETCH_MIN_SCORE",),
         ),
         ProviderField(
+            key="prefetch_kinds", label="Prefetch kinds", kind=KIND_TEXT, default="episodic,semantic",
+            description="Memory kinds searched by automatic prefetch (comma list of episodic, semantic, "
+                        "procedural). `all` includes procedural. The recall tool always searches every kind.",
+            env_fallbacks=("AMES_PREFETCH_KINDS",),
+        ),
+        ProviderField(
             key="api_key", label="API key", kind=KIND_SECRET, env_key="AMES_SERVICE_KEY",
             description="Per-profile API key; determines the service-side owner identity. "
                         "Visibility is bound to the key — the profile can never widen it.",
