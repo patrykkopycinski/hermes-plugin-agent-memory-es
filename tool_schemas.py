@@ -15,7 +15,17 @@ TOOL_SCHEMAS: tuple[dict[str, Any], ...] = (
     {
         "name": "agent_memory_recall",
         "description": "Search the long-term memory bank",
-        "parameters": {"type": "object", "properties": {"query": {"type": "string"}},
+        "parameters": {"type": "object",
+                       "properties": {
+                           "query": {"type": "string"},
+                           "min_score": {"type": "number",
+                                         "description": "Optional floor on the fused score; if nothing "
+                                                        "clears it the result is {abstained: true}. "
+                                                        "Default off."},
+                           "filter": {"type": "object",
+                                      "description": "Optional tag filter {all, any, none, narrow_any}, "
+                                                     "applied in ES. A filter matching nothing abstains; "
+                                                     "it never falls back to unfiltered."}},
                        "required": ["query"]},
     },
     {

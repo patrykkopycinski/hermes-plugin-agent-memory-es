@@ -15,6 +15,35 @@ from typing import Any, Dict, List, Optional
 from agent.memory_provider import MemoryProvider, RecallStatus, is_trivial_prompt
 
 
+# Calibrated on 130 real prompts replayed against prod recall (docs/min-score-calibration.md).
+# Fused score = RRF + recency, so it spans ~0.0179-0.0189 and tracks rank, not relevance.
+DEFAULT_PREFETCH_MIN_SCORE = 0.0184
+
+RECALL_PROPERTIES: Dict[str, Any] = {
+    "query": {"type": "string"},
+    "min_score": {"type": "number",
+                  "description": "Optional floor on the fused score; if nothing clears it the "
+                                 "result is {abstained: true}. Default off."},
+    "filter": {"type": "object",
+               "description": "Optional tag filter {all, any, none, narrow_any}, applied in ES. "
+                              "A filter matching nothing abstains; it never falls back to unfiltered."},
+}
+
+
+def prefetch_min_score() -> Optional[float]:
+    """min_score sent with every prefetch. AMES_PREFETCH_MIN_SCORE overrides; ''/off/none disables."""
+    raw = os.environ.get("AMES_PREFETCH_MIN_SCORE")
+    if raw is None:
+        return DEFAULT_PREFETCH_MIN_SCORE
+    raw = raw.strip().lower()
+    if raw in ("", "off", "none", "false"):
+        return None
+    try:
+        return float(raw)
+    except ValueError:
+        return DEFAULT_PREFETCH_MIN_SCORE
+
+
 class AgentMemoryEsProvider(MemoryProvider):
     DEFAULT_URL = "http://localhost:8123"
 
@@ -49,7 +78,7 @@ class AgentMemoryEsProvider(MemoryProvider):
     def initialize(self, session_id: str, **kwargs) -> None:
         # owner is whatever the service says the key is; cache for prompt block
         try:
-            who = self._post("/memory/recall", {"query": "identity probe", "size": 1})
+            self._post("/memory/recall", {"query": "identity probe", "size": 1})
             self._owner = "ok"
         except Exception:
             self._owner = ""
@@ -63,11 +92,17 @@ class AgentMemoryEsProvider(MemoryProvider):
     def prefetch(self, query: str, *, session_id: str = "") -> str:
         if is_trivial_prompt(query):
             return ""
+        body: Dict[str, Any] = {"query": query, "size": 5}
+        min_score = prefetch_min_score()
+        if min_score is not None:
+            body["min_score"] = min_score
         try:
-            r = self._post("/memory/recall", {"query": query, "size": 5})
-            self._last = r.get("fused", [])
+            r = self._post("/memory/recall", body)
+            # abstained => nothing cleared the floor: inject nothing (no empty header, no stale hits)
+            self._last = [] if r.get("abstained") else r.get("fused", [])
             return "\n".join(f"[{h['id']}] {h['text']}" for h in self._last[:5])
         except Exception:
+            self._last = []
             return ""
 
     def recall_status(self) -> Optional[RecallStatus]:
@@ -85,7 +120,7 @@ class AgentMemoryEsProvider(MemoryProvider):
     def get_tool_schemas(self) -> List[Dict[str, Any]]:
         return [
             {"name": "agent_memory_recall", "description": "Search the long-term memory bank",
-             "parameters": {"type": "object", "properties": {"query": {"type": "string"}},
+             "parameters": {"type": "object", "properties": RECALL_PROPERTIES,
                               "required": ["query"]}},
             {"name": "agent_memory_retain", "description": "Store a durable fact in memory",
              "parameters": {"type": "object",
@@ -101,7 +136,14 @@ class AgentMemoryEsProvider(MemoryProvider):
     def handle_tool_call(self, tool_name: str, args: Dict[str, Any], **kwargs) -> str:
         try:
             if tool_name == "agent_memory_recall":
-                r = self._post("/memory/recall", {"query": args["query"], "size": 8})
+                body = {"query": args["query"], "size": 8}
+                # explicit tool calls stay unfiltered unless the caller opts in
+                for opt in ("min_score", "filter"):
+                    if args.get(opt) is not None:
+                        body[opt] = args[opt]
+                r = self._post("/memory/recall", body)
+                if r.get("abstained"):
+                    return json.dumps({"abstained": True, "results": []})
                 return json.dumps([{"id": h["id"], "text": h["text"],
                                     "visibility": h["visibility"]} for h in r["fused"]])
             if tool_name == "agent_memory_retain":

@@ -1,0 +1,362 @@
+[
+ {
+  "query_i": 0,
+  "rank": 0,
+  "id": "jnL8JqEBdojjX8WIRSR_",
+  "kind": "episodic",
+  "score": 0.01884775507609976,
+  "relevant": 1
+ },
+ {
+  "query_i": 0,
+  "rank": 1,
+  "id": "MTIH_KAB9sR6Y6rX9MPQ",
+  "kind": "semantic",
+  "score": 0.01867306264197314,
+  "relevant": 1
+ },
+ {
+  "query_i": 0,
+  "rank": 2,
+  "id": "7DKN-aAB9sR6Y6rXO7Np",
+  "kind": "procedural",
+  "score": 0.018655954148687974,
+  "relevant": 0
+ },
+ {
+  "query_i": 0,
+  "rank": 3,
+  "id": "VXdgEqEBej0806lkQ0PL",
+  "kind": "episodic",
+  "score": 0.018529808490405957,
+  "relevant": 1
+ },
+ {
+  "query_i": 0,
+  "rank": 4,
+  "id": "wDIK_KAB9sR6Y6rXtscF",
+  "kind": "semantic",
+  "score": 0.018408725224313482,
+  "relevant": 1
+ },
+ {
+  "query_i": 1,
+  "rank": 0,
+  "id": "43e31772fa2ee9370ab553ffbfe8d905ed330494e6e3ac5a9c923e2432c11111",
+  "kind": "semantic",
+  "score": 0.01885244734211236,
+  "relevant": 1
+ },
+ {
+  "query_i": 1,
+  "rank": 1,
+  "id": "h3KaG6EBdojjX8WI6R_2",
+  "kind": "episodic",
+  "score": 0.018825454578787704,
+  "relevant": 0
+ },
+ {
+  "query_i": 1,
+  "rank": 2,
+  "id": "1zKK-aAB9sR6Y6rX7rP4",
+  "kind": "procedural",
+  "score": 0.018655890730850312,
+  "relevant": 0
+ },
+ {
+  "query_i": 1,
+  "rank": 3,
+  "id": "2423fda8bcff6cb1af56f1f19acce36be2a6a65a4263ab879d045909ed116015",
+  "kind": "semantic",
+  "score": 0.018587981408180406,
+  "relevant": 0
+ },
+ {
+  "query_i": 1,
+  "rank": 4,
+  "id": "6DIsEaEB9sR6Y6rXt_wt",
+  "kind": "episodic",
+  "score": 0.018524902097741804,
+  "relevant": 1
+ },
+ {
+  "query_i": 6,
+  "rank": 0,
+  "id": "JnIIL6EBdojjX8WIxyrj",
+  "kind": "episodic",
+  "score": 0.01885245865675199,
+  "relevant": 1
+ },
+ {
+  "query_i": 6,
+  "rank": 1,
+  "id": "ad472ade0f9467d052de826b6e7b55b7014a94f4c7146b6cacd06d05346791a6",
+  "kind": "semantic",
+  "score": 0.01885245865675199,
+  "relevant": 1
+ },
+ {
+  "query_i": 6,
+  "rank": 2,
+  "id": "1zKK-aAB9sR6Y6rX7rP4",
+  "kind": "procedural",
+  "score": 0.018655890278947904,
+  "relevant": 0
+ },
+ {
+  "query_i": 6,
+  "rank": 3,
+  "id": "LXJELaEBdojjX8WI8Cej",
+  "kind": "episodic",
+  "score": 0.01858780790733031,
+  "relevant": 0
+ },
+ {
+  "query_i": 6,
+  "rank": 4,
+  "id": "dd42a921a417975febc244016f092446eea152a34443f0bca6b1dabe01687fcb",
+  "kind": "semantic",
+  "score": 0.01858709540534101,
+  "relevant": 0
+ },
+ {
+  "query_i": 7,
+  "rank": 0,
+  "id": "zjLSC6EB9sR6Y6rXKftq",
+  "kind": "episodic",
+  "score": 0.01876514282543884,
+  "relevant": 0
+ },
+ {
+  "query_i": 7,
+  "rank": 1,
+  "id": "1zKK-aAB9sR6Y6rX7rP4",
+  "kind": "procedural",
+  "score": 0.0186558901834285,
+  "relevant": 0
+ },
+ {
+  "query_i": 7,
+  "rank": 2,
+  "id": "06917f39ffc7850de549b2548bbd1c861e308de57fdc97fa46225d04ecf8bf40",
+  "kind": "semantic",
+  "score": 0.0185739479158797,
+  "relevant": 0
+ },
+ {
+  "query_i": 7,
+  "rank": 3,
+  "id": "5HJJGqEBdojjX8WI-R4W",
+  "kind": "episodic",
+  "score": 0.018557299201829046,
+  "relevant": 0
+ },
+ {
+  "query_i": 7,
+  "rank": 4,
+  "id": "7DKN-aAB9sR6Y6rXO7Np",
+  "kind": "procedural",
+  "score": 0.018391543160623837,
+  "relevant": 0
+ },
+ {
+  "query_i": 8,
+  "rank": 0,
+  "id": "gHfJFaEBej0806lkEEbo",
+  "kind": "episodic",
+  "score": 0.018807102035776943,
+  "relevant": 1
+ },
+ {
+  "query_i": 8,
+  "rank": 1,
+  "id": "zDL--6AB9sR6Y6rX1beO",
+  "kind": "semantic",
+  "score": 0.018672821127677333,
+  "relevant": 0
+ },
+ {
+  "query_i": 8,
+  "rank": 2,
+  "id": "7DKN-aAB9sR6Y6rXO7Np",
+  "kind": "procedural",
+  "score": 0.01865595329929654,
+  "relevant": 0
+ },
+ {
+  "query_i": 8,
+  "rank": 3,
+  "id": "-XJ3IqEBdojjX8WIMyId",
+  "kind": "episodic",
+  "score": 0.018576666486765613,
+  "relevant": 1
+ },
+ {
+  "query_i": 8,
+  "rank": 4,
+  "id": "JjIE_KAB9sR6Y6rXa71O",
+  "kind": "semantic",
+  "score": 0.01840855834332124,
+  "relevant": 0
+ },
+ {
+  "query_i": 10,
+  "rank": 0,
+  "id": "be78951a122152ddc3ba0a49a490d35b91a49c34012add93ffee7fa52eda5644",
+  "kind": "semantic",
+  "score": 0.018848938931418115,
+  "relevant": 0
+ },
+ {
+  "query_i": 10,
+  "rank": 1,
+  "id": "oTIy_KAB9sR6Y6rXl-ZO",
+  "kind": "episodic",
+  "score": 0.018674186648831526,
+  "relevant": 0
+ },
+ {
+  "query_i": 10,
+  "rank": 2,
+  "id": "1zKK-aAB9sR6Y6rX7rP4",
+  "kind": "procedural",
+  "score": 0.01865588977909463,
+  "relevant": 0
+ },
+ {
+  "query_i": 10,
+  "rank": 3,
+  "id": "_XJ5IqEBdojjX8WIGyKQ",
+  "kind": "episodic",
+  "score": 0.018576679824918698,
+  "relevant": 0
+ },
+ {
+  "query_i": 10,
+  "rank": 4,
+  "id": "814b9870541d344f12f1a0d4f662e1120d3635adbaa02e736b467d5dec87faeb",
+  "kind": "semantic",
+  "score": 0.01857406428655365,
+  "relevant": 0
+ },
+ {
+  "query_i": 11,
+  "rank": 0,
+  "id": "ddb89ab544773214818e931afd7557b6cef1824ea1981fb7d7ab08d00d16ab97",
+  "kind": "semantic",
+  "score": 0.018847602801695073,
+  "relevant": 0
+ },
+ {
+  "query_i": 11,
+  "rank": 1,
+  "id": "LzLSCKEB9sR6Y6rX4-t_",
+  "kind": "episodic",
+  "score": 0.018750005042128336,
+  "relevant": 0
+ },
+ {
+  "query_i": 11,
+  "rank": 2,
+  "id": "1zKK-aAB9sR6Y6rX7rP4",
+  "kind": "procedural",
+  "score": 0.01865588970795978,
+  "relevant": 0
+ },
+ {
+  "query_i": 11,
+  "rank": 3,
+  "id": "BjJmEaEB9sR6Y6rXVP1h",
+  "kind": "episodic",
+  "score": 0.018525835533961088,
+  "relevant": 0
+ },
+ {
+  "query_i": 11,
+  "rank": 4,
+  "id": "gzIc_KAB9sR6Y6rXluN8",
+  "kind": "semantic",
+  "score": 0.01840919619691815,
+  "relevant": 0
+ },
+ {
+  "query_i": 12,
+  "rank": 0,
+  "id": "7TIyEaEB9sR6Y6rXbvx7",
+  "kind": "episodic",
+  "score": 0.01878940487600294,
+  "relevant": 0
+ },
+ {
+  "query_i": 12,
+  "rank": 1,
+  "id": "ijIF_KAB9sR6Y6rXJ76A",
+  "kind": "semantic",
+  "score": 0.01867298775242815,
+  "relevant": 0
+ },
+ {
+  "query_i": 12,
+  "rank": 2,
+  "id": "1zKK-aAB9sR6Y6rX7rP4",
+  "kind": "procedural",
+  "score": 0.018655889638085555,
+  "relevant": 0
+ },
+ {
+  "query_i": 12,
+  "rank": 3,
+  "id": "8DIE_KAB9sR6Y6rXTryM",
+  "kind": "semantic",
+  "score": 0.018408554811433483,
+  "relevant": 0
+ },
+ {
+  "query_i": 12,
+  "rank": 4,
+  "id": "7DKN-aAB9sR6Y6rXO7Np",
+  "kind": "procedural",
+  "score": 0.018391542615357265,
+  "relevant": 0
+ },
+ {
+  "query_i": 13,
+  "rank": 0,
+  "id": "TDIEEKEB9sR6Y6rXnPxQ",
+  "kind": "episodic",
+  "score": 0.01878440502642598,
+  "relevant": 1
+ },
+ {
+  "query_i": 13,
+  "rank": 1,
+  "id": "7caaf45b5380fc75d6d7fc92f77dfc49ab41879cdafaa8015dc36fc58f336c56",
+  "kind": "semantic",
+  "score": 0.01878440502642598,
+  "relevant": 1
+ },
+ {
+  "query_i": 13,
+  "rank": 2,
+  "id": "7DKN-aAB9sR6Y6rXO7Np",
+  "kind": "procedural",
+  "score": 0.018655952649870536,
+  "relevant": 0
+ },
+ {
+  "query_i": 13,
+  "rank": 3,
+  "id": "8726343cc42996c7c80245be4ac411d4fd8d46349b6b0934850bb9291a3e6496",
+  "kind": "semantic",
+  "score": 0.01858601867084125,
+  "relevant": 1
+ },
+ {
+  "query_i": 13,
+  "rank": 4,
+  "id": "vnKgJKEBdojjX8WIJSNH",
+  "kind": "episodic",
+  "score": 0.018580217868338605,
+  "relevant": 0
+ }
+]
