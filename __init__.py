@@ -30,9 +30,26 @@ RECALL_PROPERTIES: Dict[str, Any] = {
 }
 
 
+def _stored_prefetch_min_score() -> Optional[str]:
+    """Value saved by the desktop panel in <HERMES_HOME>/agent_memory_es/config.json, if any."""
+    try:
+        from hermes_constants import get_hermes_home
+        data = json.loads((get_hermes_home() / "agent_memory_es" / "config.json").read_text("utf-8-sig"))
+    except Exception:
+        return None
+    val = data.get("prefetch_min_score") if isinstance(data, dict) else None
+    return None if val is None else str(val)
+
+
 def prefetch_min_score() -> Optional[float]:
-    """min_score sent with every prefetch. AMES_PREFETCH_MIN_SCORE overrides; ''/off/none disables."""
+    """min_score sent with every prefetch.
+
+    Precedence: AMES_PREFETCH_MIN_SCORE env > stored config key `prefetch_min_score` > default.
+    ''/off/none/false disables; an unparseable value falls back to the default.
+    """
     raw = os.environ.get("AMES_PREFETCH_MIN_SCORE")
+    if raw is None:
+        raw = _stored_prefetch_min_score()
     if raw is None:
         return DEFAULT_PREFETCH_MIN_SCORE
     raw = raw.strip().lower()

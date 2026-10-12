@@ -46,3 +46,39 @@ Override with AMES_PREFETCH_MIN_SCORE (empty/off disables).
 Context bloat (median 15.8k chars at size 8, 8.3k at size 5) comes from per-kind noise and result size, not from low scores.
 Candidate levers, not done here: exclude/limit `procedural` in prefetch, a relevance signal beyond RRF (the server's
 cross-encoder `rerank_score`, off by default), smaller size. Tag filtering stays blocked on retain-time tagging (phase 2).
+
+## Config precedence
+`AMES_PREFETCH_MIN_SCORE` env > `prefetch_min_score` in `<HERMES_HOME>/agent_memory_es/config.json` (the
+value the desktop panel saves) > built-in default 0.0184. `""`/`off`/`none`/`false` disables; an unparseable
+value falls back to the default.
+
+## Verification transcripts (python3.12, read-only against prod recall)
+
+Abstain-branch mutation (`self._last = [] if r.get("abstained") else r.get("fused", [])` -> `self._last = r.get("fused", [])`):
+
+    mutant : FAILED tests/test_min_score.py::test_abstained_response_injects_nothing  (1 failed, 14 passed)
+    restore: 15 passed in tests/test_min_score.py; full suite 21 passed
+
+Stored-config mutation (drop the `_stored_prefetch_min_score()` read): 2 failed
+(`..._read_from_stored_config`, `..._stored_off_disables`), 13 passed; restored -> green.
+
+Session smoke: worktree plugin loaded through Hermes' `load_memory_provider`, driven via
+`MemoryManager.prefetch_all` + `build_memory_context_block` (the same path `run_agent` uses), prod recall:
+
+    # 1. default config, real query -> INJECTS
+    resolved min_score: 0.0184
+    request body (minus query): {"size": 5, "min_score": 0.0184}
+    response abstained: False hits: 5
+    raw injected chars: 7994 | context block chars: 8218
+    recall_status: RecallStatus(provider_label='agent-memory-es', count=5)
+
+    # 2. panel-stored prefetch_min_score=0.0189 (config.json, no env), same query -> ABSTAINS
+    resolved min_score: 0.0189
+    request body (minus query): {"size": 5, "min_score": 0.0189}
+    response abstained: True hits: 0
+    raw injected chars: 0 | context block chars: 0
+    recall_status: None
+    block head: <nothing injected>
+
+Caveat: the abstain case uses a deliberately high floor (0.0189), because the fused score tracks rank and
+semantic search always returns neighbours, so even gibberish clears the default floor (see above).

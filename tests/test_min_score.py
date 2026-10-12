@@ -24,8 +24,9 @@ HIT = {"id": "d1", "text": "some memory", "visibility": "private"}
 
 
 @pytest.fixture
-def provider(monkeypatch):
+def provider(monkeypatch, tmp_path):
     monkeypatch.delenv("AMES_PREFETCH_MIN_SCORE", raising=False)
+    monkeypatch.setenv("HERMES_HOME", str(tmp_path))  # isolate from the real stored config
     p = ames.AgentMemoryEsProvider()
     p.calls = []
     p.response = {"fused": [HIT], "abstained": False}
@@ -106,4 +107,29 @@ def test_recall_schema_exposes_min_score_and_filter(provider):
     props = {s["name"]: s for s in provider.get_tool_schemas()}["agent_memory_recall"]["parameters"]["properties"]
     assert props["min_score"]["type"] == "number"
     assert props["filter"]["type"] == "object"
+
+
+def _write_stored(tmp_path, value):
+    d = tmp_path / "agent_memory_es"
+    d.mkdir(exist_ok=True)
+    (d / "config.json").write_text(json.dumps({"prefetch_min_score": value}))
+
+
+def test_prefetch_min_score_read_from_stored_config(provider, tmp_path, monkeypatch):
+    _write_stored(tmp_path, "0.0186")
+    provider.prefetch("what did we decide about the kibana eval gate")
+    assert provider.calls[0][1]["min_score"] == 0.0186
+
+
+def test_prefetch_min_score_env_beats_stored_config(provider, tmp_path, monkeypatch):
+    _write_stored(tmp_path, "0.0186")
+    monkeypatch.setenv("AMES_PREFETCH_MIN_SCORE", "0.0187")
+    provider.prefetch("what did we decide about the kibana eval gate")
+    assert provider.calls[0][1]["min_score"] == 0.0187
+
+
+def test_prefetch_min_score_stored_off_disables(provider, tmp_path, monkeypatch):
+    _write_stored(tmp_path, "off")
+    provider.prefetch("what did we decide about the kibana eval gate")
+    assert "min_score" not in provider.calls[0][1]
 
