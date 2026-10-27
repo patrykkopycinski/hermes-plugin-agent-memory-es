@@ -133,7 +133,7 @@ class AgentMemoryEsProvider(MemoryProvider):
     def system_prompt_block(self) -> str:
         return ("External memory: agent-memory-es (ES-native bank with private/team/common "
                 "visibility). Tools: agent_memory_recall, agent_memory_retain, "
-                "agent_memory_reflect.")
+                "agent_memory_reflect, agent_memory_update, agent_memory_delete.")
 
     def prefetch(self, query: str, *, session_id: str = "") -> str:
         if is_trivial_prompt(query):
@@ -180,6 +180,17 @@ class AgentMemoryEsProvider(MemoryProvider):
             {"name": "agent_memory_reflect", "description": "Answer a question from memory with citations",
              "parameters": {"type": "object", "properties": {"question": {"type": "string"}},
                               "required": ["question"]}},
+            {"name": "agent_memory_update", "description": "Fix a memory in place by id (typo/stale value); owner-only",
+             "parameters": {"type": "object",
+                              "properties": {"doc_id": {"type": "string"},
+                                             "text": {"type": "string", "description": "Replacement text (whole doc)"},
+                                             "visibility": {"type": "string",
+                                                            "enum": ["private", "team", "common"]}},
+                              "required": ["doc_id"]}},
+            {"name": "agent_memory_delete", "description": "Delete a memory (whole doc_group); owner-only, tombstoned",
+             "parameters": {"type": "object",
+                              "properties": {"doc_id": {"type": "string"}},
+                              "required": ["doc_id"]}},
         ]
 
     def handle_tool_call(self, tool_name: str, args: Dict[str, Any], **kwargs) -> str:
@@ -203,6 +214,17 @@ class AgentMemoryEsProvider(MemoryProvider):
                 # reflect runs multi-round LLM synthesis server-side (~60s+);
                 # default 20s _post timeout killed every reflect call
                 r = self._post("/memory/reflect", {"question": args["question"]}, timeout=150)
+                return json.dumps(r)
+            if tool_name == "agent_memory_update":
+                body = {"kind": args.get("kind", "semantic"), "doc_id": args["doc_id"]}
+                for opt in ("text", "tags", "visibility"):
+                    if args.get(opt) is not None:
+                        body[opt] = args[opt]
+                r = self._post("/memory/update", body)
+                return json.dumps(r)
+            if tool_name == "agent_memory_delete":
+                r = self._post("/memory/delete",
+                               {"kind": args.get("kind", "semantic"), "doc_id": args["doc_id"]})
                 return json.dumps(r)
         except urllib.error.HTTPError as e:
             return json.dumps({"error": f"service {e.code}: {e.read().decode()[:200]}"})
