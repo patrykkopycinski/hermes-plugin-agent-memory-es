@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import urllib.error
 import urllib.request
 from typing import Any, Dict, List, Optional
@@ -90,6 +91,23 @@ def prefetch_kinds() -> Optional[List[str]]:
     return kinds or list(DEFAULT_PREFETCH_KINDS)
 
 
+# Every separator a model renders as a line break, not just \n (same set as the MCP server's fmt).
+_LINE_SPLIT = re.compile(r"\r\n|[\n\r\v\f\x1c\x1d\x1e\x85\u2028\u2029]")
+_FENCE_FRAGMENT = re.compile(r"<\s*/?\s*memory-context\s*>?|memory-context\s*>", re.IGNORECASE)
+
+
+def _fence_safe(text: str) -> str:
+    """Stored text is untrusted: it must not close the harness's <memory-context> fence or mint a
+    column-0 "[id]" hit line. The harness strips fence tags in one pass, so nested fragments
+    ("</memory-context</memory-context>>") reassemble into a real tag; remove to a fixpoint here.
+    """
+    prev = None
+    while prev != text:
+        prev, text = text, _FENCE_FRAGMENT.sub("", text)
+    first, *rest = _LINE_SPLIT.split(text)
+    return "\n".join([first, *("  | " + ln for ln in rest)])
+
+
 class AgentMemoryEsProvider(MemoryProvider):
     DEFAULT_URL = "http://localhost:8123"
 
@@ -149,7 +167,8 @@ class AgentMemoryEsProvider(MemoryProvider):
             r = self._post("/memory/recall", body)
             # abstained => nothing cleared the floor: inject nothing (no empty header, no stale hits)
             self._last = [] if r.get("abstained") else r.get("fused", [])
-            return "\n".join(f"[{h['id']}] {h['text']}" for h in self._last[:5])
+            return "\n".join(f"[{_fence_safe(str(h['id']))}] {_fence_safe(str(h['text']))}"
+                             for h in self._last[:5])
         except Exception:
             self._last = []
             return ""
