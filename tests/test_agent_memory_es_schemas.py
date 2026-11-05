@@ -32,7 +32,7 @@ def test_uses_parameters_not_input_schema():
 def test_schemas_survive_sanitizer_with_args_intact():
     by_name = {s["name"]: s for s in _sanitized_schemas()}
     assert set(by_name) == {"agent_memory_recall", "agent_memory_retain", "agent_memory_reflect",
-                            "agent_memory_update", "agent_memory_delete"}
+                            "agent_memory_update", "agent_memory_delete", "agent_memory_unreject"}
     assert by_name["agent_memory_recall"]["parameters"]["properties"]["query"] == {"type": "string"}
     assert "query" in by_name["agent_memory_recall"]["parameters"].get("required", [])
     assert "text" in by_name["agent_memory_retain"]["parameters"]["properties"]

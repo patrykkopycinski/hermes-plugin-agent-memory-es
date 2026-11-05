@@ -151,7 +151,7 @@ class AgentMemoryEsProvider(MemoryProvider):
     def system_prompt_block(self) -> str:
         return ("External memory: agent-memory-es (ES-native bank with private/team/common "
                 "visibility). Tools: agent_memory_recall, agent_memory_retain, "
-                "agent_memory_reflect, agent_memory_update, agent_memory_delete.")
+                "agent_memory_reflect, agent_memory_update, agent_memory_delete, agent_memory_unreject.")
 
     def prefetch(self, query: str, *, session_id: str = "") -> str:
         if is_trivial_prompt(query):
@@ -206,10 +206,25 @@ class AgentMemoryEsProvider(MemoryProvider):
                                              "visibility": {"type": "string",
                                                             "enum": ["private", "team", "common"]}},
                               "required": ["doc_id"]}},
-            {"name": "agent_memory_delete", "description": "Delete a memory (whole doc_group); owner-only, tombstoned",
+            {"name": "agent_memory_delete",
+             "description": "Delete a memory (whole doc_group) by id; owner-only. A plain delete only removes it: "
+                            "the same text can be retained again. Set retract=true when the memory is wrong and "
+                            "must never be recorded again (also tombstones the text; undo with agent_memory_unreject).",
              "parameters": {"type": "object",
-                              "properties": {"doc_id": {"type": "string"}},
+                              "properties": {"doc_id": {"type": "string"},
+                                             "retract": {"type": "boolean",
+                                                         "description": "true = wrong, never record it again "
+                                                                        "(tombstone the text); omit for a plain delete"}},
                               "required": ["doc_id"]}},
+            {"name": "agent_memory_unreject",
+             "description": "Lift tombstones left by agent_memory_delete with retract=true so the value can be "
+                            "retained again; owner-only. Pass exactly one of text or source_id (the doc id the "
+                            "retracting delete was called with). Returns {lifted, source_ids, by}.",
+             "parameters": {"type": "object",
+                              "properties": {"text": {"type": "string",
+                                                      "description": "Rejected text that should be retainable again"},
+                                             "source_id": {"type": "string",
+                                                           "description": "Doc id of the retracted memory (max 512 chars)"}}}},
         ]
 
     def handle_tool_call(self, tool_name: str, args: Dict[str, Any], **kwargs) -> str:
@@ -242,9 +257,21 @@ class AgentMemoryEsProvider(MemoryProvider):
                 r = self._post("/memory/update", body)
                 return json.dumps(r)
             if tool_name == "agent_memory_delete":
-                r = self._post("/memory/delete",
-                               {"kind": args.get("kind", "semantic"), "doc_id": args["doc_id"]})
+                body = {"kind": args.get("kind", "semantic"), "doc_id": args["doc_id"]}
+                # only when provided; a non-bool is passed through so the backend's 422 surfaces
+                if args.get("retract") is not None:
+                    body["retract"] = args["retract"]
+                r = self._post("/memory/delete", body)
                 return json.dumps(r)
+            if tool_name == "agent_memory_unreject":
+                has_text, has_source = args.get("text") is not None, args.get("source_id") is not None
+                if has_text == has_source:
+                    return json.dumps({"error": "pass exactly one of text or source_id"})
+                key = "text" if has_text else "source_id"
+                v = args[key]
+                if not isinstance(v, str) or not v.strip():
+                    return json.dumps({"error": f"{key} must be a non-empty string"})
+                return json.dumps(self._post("/memory/unreject", {key: v}))
         except urllib.error.HTTPError as e:
             return json.dumps({"error": f"service {e.code}: {e.read().decode()[:200]}"})
         except Exception as e:  # noqa: BLE001
