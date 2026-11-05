@@ -5,19 +5,17 @@ key, not the MCP/Anthropic ``input_schema`` naming. The sanitizer replaces a
 missing ``parameters`` with an empty object, which silently strips every
 argument (the tool then fails with ``{"error": "'query'"}`` at call time)."""
 
-from agent.memory_manager import normalize_tool_schema
-from tools.schema_sanitizer import sanitize_tool_schemas
-
-from plugins.memory import load_memory_provider
+from test_min_score import ames  # builds the provider from this checkout, not an installed copy
 
 
 def _provider():
-    p = load_memory_provider("agent_memory_es", register_skills=False)
-    assert p is not None, "agent_memory_es not discoverable (user/project/bundled)"
-    return p
+    return ames.AgentMemoryEsProvider()
 
 
 def _sanitized_schemas() -> list[dict]:
+    from agent.memory_manager import normalize_tool_schema
+    from tools.schema_sanitizer import sanitize_tool_schemas
+
     tools = [{"type": "function", "function": normalize_tool_schema(s)}
              for s in _provider().get_tool_schemas()]
     return [t["function"] for t in sanitize_tool_schemas(tools)]

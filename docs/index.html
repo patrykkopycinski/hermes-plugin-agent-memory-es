@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>agent_memory_es — a Hermes Agent memory provider plugin</title>
-<meta name="description" content="Standalone Hermes Agent memory plugin backed by agent-memory-es: recall, retain, reflect as native agent tools, with private/team/common visibility.">
+<meta name="description" content="Standalone Hermes Agent memory plugin backed by agent-memory-es: recall, retain, reflect, update, delete, unreject as native agent tools, with private/team/common visibility.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2307101F'/><path d='M9 16h4l2-5 3 10 2-5h3' stroke='%2361A2FF' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 <style>
   :root{--bg:#07101F;--panel:#0B1628;--panel2:#0E1D33;--fg:#D6E4FF;--muted:#7C8DB0;--accent:#61A2FF;--gold:#FEC514;--border:#1F3050;--mono:ui-monospace,'Roboto Mono','SF Mono',monospace}
@@ -56,7 +56,7 @@
   <div class="wrap">
     <span class="badge">Hermes Agent · memory provider · MIT</span>
     <h1>Give Hermes Agent<br><span>a memory that outlives the chat.</span></h1>
-    <p class="lede">A standalone plugin that turns the <a href="https://patrykkopycinski.github.io/agent-memory-es/">agent-memory-es</a> service into three native agent tools — recall, retain, reflect — with server-enforced private/team/common visibility.</p>
+    <p class="lede">A standalone plugin that turns the <a href="https://patrykkopycinski.github.io/agent-memory-es/">agent-memory-es</a> service into six native agent tools — recall, retain, reflect, update, delete, unreject — with server-enforced private/team/common visibility.</p>
     <div class="cta">
       <a class="btn primary" href="#install">Install in 60 seconds</a>
       <a class="btn ghost" href="https://github.com/patrykkopycinski/hermes-plugin-agent-memory-es">GitHub ↗</a>
@@ -68,12 +68,15 @@
 <section class="alt">
   <div class="wrap">
     <p class="kicker">What the agent gets</p>
-    <h2>Three tools, zero new concepts.</h2>
+    <h2>Six tools, zero new concepts.</h2>
     <p class="sub">No daemon on your laptop beyond the service itself, no config surface beyond a URL and a key. The plugin is a thin client — all memory logic lives in the service.</p>
     <div class="tools">
       <div class="tool"><code>agent_memory_recall</code><span>hybrid search over the memory bank — the agent's own <b style="color:var(--fg)">remember that…</b> lookup</span></div>
       <div class="tool"><code>agent_memory_retain</code><span>store a durable fact, tagged <code>private</code> / <code>team</code> / <code>common</code> — visibility the profile can narrow but never widen</span></div>
       <div class="tool"><code>agent_memory_reflect</code><span>ask a question over memory, get an answer with citations back to memory ids</span></div>
+      <div class="tool"><code>agent_memory_update</code><span>fix a memory in place by id — typo or stale value; owner-only</span></div>
+      <div class="tool"><code>agent_memory_delete</code><span>remove a memory by id; pass <code>retract: true</code> to also tombstone it so it cannot be retained again; owner-only</span></div>
+      <div class="tool"><code>agent_memory_unreject</code><span>lift tombstones left by a retracting delete, by <code>text</code> or <code>source_id</code>; owner-only</span></div>
     </div>
   </div>
 </section>

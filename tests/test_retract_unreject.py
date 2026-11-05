@@ -30,10 +30,13 @@ def test_delete_sends_retract_only_when_provided(provider):
     provider.handle_tool_call("agent_memory_delete", {"doc_id": "d1"})
     provider.handle_tool_call("agent_memory_delete", {"doc_id": "d1", "retract": True})
     provider.handle_tool_call("agent_memory_delete", {"doc_id": "d1", "retract": False})
+    provider.handle_tool_call("agent_memory_delete", {"doc_id": "d1", "retract": "yes"})
     assert provider.calls == [
         ("/memory/delete", {"kind": "semantic", "doc_id": "d1"}),
         ("/memory/delete", {"kind": "semantic", "doc_id": "d1", "retract": True}),
         ("/memory/delete", {"kind": "semantic", "doc_id": "d1", "retract": False}),
+        # forwarded unchanged so the backend's 422 surfaces; no local coercion
+        ("/memory/delete", {"kind": "semantic", "doc_id": "d1", "retract": "yes"}),
     ]
 
 

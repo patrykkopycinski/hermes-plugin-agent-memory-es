@@ -5,13 +5,16 @@ plugin that backs Hermes long-term memory with the
 [agent-memory-es](https://github.com/patrykkopycinski/agent-memory-es) service
 (ES-native memory bank with `private` / `team` / `common` visibility tiers).
 
-Adds three agent tools:
+Adds six agent tools:
 
 | Tool | Purpose |
 |---|---|
 | `agent_memory_recall` | Search the long-term memory bank |
 | `agent_memory_retain` | Store a durable fact (with visibility tier) |
 | `agent_memory_reflect` | Answer a question from memory with citations |
+| `agent_memory_update` | Fix a memory in place by id (owner-only) |
+| `agent_memory_delete` | Remove a memory by id; `retract: true` also tombstones it so it cannot be retained again (owner-only) |
+| `agent_memory_unreject` | Lift tombstones left by a retracting delete, by `text` or `source_id` (owner-only) |
 
 Owner identity is the service-side owner bound to the API key; the profile can
 never widen visibility by argument.
